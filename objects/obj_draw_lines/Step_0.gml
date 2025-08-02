@@ -8,7 +8,7 @@ if (can_draw) {
     }
     
     if (is_drawing && mouse_check_button(mb_left)) {
-        // Tomar la siguiente posición a pintar
+        // Tomar la siguiente posición del mouse
         var new_x = mouse_x;
         var new_y = mouse_y;
         
@@ -16,37 +16,48 @@ if (can_draw) {
         if (array_length(current_line_points) > 0) {
             // Tomar el último punto
             var last = current_line_points[array_length(current_line_points) - 1];
-            // Calcular vectores.
-            var dx = new_x - last[0];
-            var dy = new_y - last[1];
             
             // Calcular distancia
             var dist = point_distance(last[0], last[1], new_x, new_y);
-            var temptative_distance = current_distance + dist;
             
-            if (temptative_distance > max_distance) {
-                var remainder = max_distance - current_distance;
-                var dir = point_direction(last[0], last[1], new_x, new_y);
-                var clamp_x = last[0] + lengthdir_x(remainder, dir);
-                var clamp_y = last[1] + lengthdir_y(remainder, dir);
-                                
-                if (array_length(current_line_points) > 1) {
-                    array_push(current_line_points, [clamp_x, clamp_y]);
-                    var new_rail = add_rail_from_points([last[0], last[1]], [new_x, new_y]);
-                    array_push(rails, new_rail);
-                    array_push(lines, current_line_points);
+            // Si la distancia es mayor o igual al minimo que debe medir.
+            if (dist >= min_rail_length) {
+                var rails_step = floor(dist / min_rail_length);
+                
+                // Por cada cachito que cabe entre los puntos...
+                for (var i = 1; i <= rails_step; i++) {
+                    var t = i / rails_step;
+                            
+                    // Encontrar los puntos medios.
+                    var dx = lerp(last[0], new_x, t);
+                    var dy = lerp(last[1], new_y, t);
+                    
+                    // Sacamos la distancia del step.
+                    var step_dist = point_distance(last[0], last[1], dx, dy);
+                    var tmp_current_distance = current_distance + step_dist;
+                    
+                    // Si la distancia del step no es mayor a la distancia máxima...
+                    if (tmp_current_distance <= max_distance) {
+                        // Agregar nuevo punto al array.
+                        array_push(current_line_points, [dx, dy]);
+                        var new_rail = add_rail_from_points([last[0], last[1]], [dx, dy]);
+                        array_push(rails, new_rail);
+                        
+                        // Actualizar la distancia.
+                        current_distance += step_dist;
+                        
+                        // Convertir este punto en el último del array
+                        last[0] = dx;
+                        last[1] = dy;
+                    } else {
+                        // Cerrar la línea.
+                        array_push(lines, current_line_points);
+                        
+                        // Dejar de dibujar.
+                        can_draw = false;
+                        is_drawing = false;
+                    }
                 }
-                current_distance += remainder;
-                
-                can_draw = false;
-                is_drawing = false;
-            } else {
-                current_distance = temptative_distance;
-                
-                 // Agregar nuevo punto al array.
-                array_push(current_line_points, [new_x, new_y]);
-                var new_rail = add_rail_from_points([last[0], last[1]], [new_x, new_y]);
-                array_push(rails, new_rail);
             }
         } else {
             // Agregar nuevo punto al array.
@@ -62,13 +73,6 @@ if (can_draw) {
         }
     }
 }
-
-show_debug_message({
-    rail_count: array_length(rails),
-    lines_count: array_length(lines),
-    current_points_count: array_length(current_line_points),
-    current_distance
-})
 
 #endregion
 

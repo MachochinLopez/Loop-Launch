@@ -36,11 +36,13 @@
   },
   "name":"Loop Launcher",
   "resources":[
+    {"id":{"name":"obj_doll","path":"objects/obj_doll/obj_doll.yy",},},
     {"id":{"name":"obj_draw_lines","path":"objects/obj_draw_lines/obj_draw_lines.yy",},},
     {"id":{"name":"obj_grinding_rail","path":"objects/obj_grinding_rail/obj_grinding_rail.yy",},},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
     {"id":{"name":"rail_functions","path":"scripts/rail_functions/rail_functions.yy",},},
     {"id":{"name":"spr_background","path":"sprites/spr_background/spr_background.yy",},},
+    {"id":{"name":"spr_doll","path":"sprites/spr_doll/spr_doll.yy",},},
     {"id":{"name":"spr_grinding_rail","path":"sprites/spr_grinding_rail/spr_grinding_rail.yy",},},
   ],
   "resourceType":"GMProject",
