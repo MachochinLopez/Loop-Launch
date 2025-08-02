@@ -16,8 +16,31 @@ function create_rails_from_lines(lines) {
             inst.x2 = p2[0];
             inst.y2 = p2[1];
             
-            inst.angle = point_direction(p1[0], p1[1], p2[0], p2[1]);
-            inst.len = point_distance(p1[0], p1[1], p2[0], p2[1]);
+            var angle = point_direction(p1[0], p1[1], p2[0], p2[1]);
+            var len = point_distance(p1[0], p1[1], p2[0], p2[1]);
+            
+            inst.image_angle = angle;
+            inst.image_xscale = len / sprite_get_width(inst.sprite_index) + 0.5;
         }
     }
+}
+
+function add_rail_from_points(p1, p2) {
+    var mid_x = (p1[0] + p2[0]) / 2;
+    var mid_y = (p1[1] + p2[1]) / 2;
+    
+    var inst = instance_create_layer(mid_x, mid_y, "Instances", obj_grinding_rail);
+    
+    inst.x1 = p1[0];
+    inst.y1 = p1[1];
+    inst.x2 = p2[0];
+    inst.y2 = p2[1];
+    
+    var angle = point_direction(p1[0], p1[1], p2[0], p2[1]);
+    var len = point_distance(p1[0], p1[1], p2[0], p2[1]);
+    
+    inst.image_angle = angle;
+    inst.image_xscale = len / sprite_get_width(inst.sprite_index) + 0.5;
+    
+    return inst;
 }
