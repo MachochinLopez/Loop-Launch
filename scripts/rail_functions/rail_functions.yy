@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"rail_functions",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"rail_functions",
+  "parent":{
+    "name":"GrindingRails",
+    "path":"folders/Scripts/GrindingRails.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
