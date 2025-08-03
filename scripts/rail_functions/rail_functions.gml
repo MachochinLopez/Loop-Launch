@@ -70,26 +70,68 @@ function project_point_to_rail(px, py, rail) {
 }
 
 
-// Devuelve para qué lado masca la iguana.
-function min_distance_to_edge(px, py, rail) {
-    var dist1 = point_distance(px, py, rail.x1, rail.y1);
-    var dist2 = point_distance(px, py, rail.x2, rail.y2);
-    
-    return min(dist1, dist2);
+function distance_to_movement_edge(px, py, rail, movement_direction) {
+    if (movement_direction > 0) {
+        // Yendo hacia x2,y2
+        return point_distance(px, py, rail.x2, rail.y2);
+    } else {
+        // Yendo hacia x1,y1
+        return point_distance(px, py, rail.x1, rail.y1);
+    }
 }
 
-function get_connected_rail(current_rail, rails, rail_connection_tolerance) {
-    for (var i = 0; i < array_length(rails); i++) {
-        var rail = rails[i];
+// Agrega esta función a tus scripts/helpers
+function get_closest_rail_directional(_x, _y, _rails, _max_distance, _hspeed, _vspeed) {
+    var closest_rail = noone;
+    var min_distance = _max_distance;
+    
+    // Calcular la dirección del movimiento
+    var movement_angle = arctan2(_vspeed, _hspeed);
+    
+    for (var i = 0; i < array_length(_rails); i++) {
+        var rail = _rails[i];
+        var closest_point = project_point_to_rail(_x, _y, rail);
+        var distance = point_distance(_x, _y, closest_point.x, closest_point.y);
         
-        // Si es el riel donde está grindeando saltárselo.
-        if (rail == current_rail) continue;
-        
-        if (point_distance(current_rail.x1, current_rail.y1, rail.x2, rail.y2) < rail_connection_tolerance || 
-            point_distance(current_rail.x2, current_rail.y2, rail.x1, rail.y1) < rail_connection_tolerance) {
-            return rail;
+        if (distance <= _max_distance) {
+            // Calcular el ángulo hacia este riel
+            var rail_angle = arctan2(closest_point.y - _y, closest_point.x - _x);
+            
+            // Calcular la diferencia angular
+            var angle_diff = abs(angle_difference(movement_angle, rail_angle));
+            
+            // Solo considerar rieles que están "adelante" (dentro de 90 grados del movimiento)
+            if (angle_diff < 90 || abs(_hspeed) < 0.1) { // Si velocidad muy baja, permitir cualquier dirección
+                if (distance < min_distance) {
+                    min_distance = distance;
+                    closest_rail = rail;
+                }
+            }
         }
     }
     
-    return noone;
+    return closest_rail;
+}
+
+// ALTERNATIVA MÁS SIMPLE: Excluir el riel anterior (condicionalmente)
+function get_closest_rail_excluding_previous(_x, _y, _rails, _max_distance, _previous_rail) {
+    var closest_rail = noone;
+    var min_distance = _max_distance;
+    
+    for (var i = 0; i < array_length(_rails); i++) {
+        var rail = _rails[i];
+        
+        // Solo saltar el riel anterior si se especifica
+        if (_previous_rail != noone && rail == _previous_rail) continue;
+        
+        var closest_point = project_point_to_rail(_x, _y, rail);
+        var distance = point_distance(_x, _y, closest_point.x, closest_point.y);
+        
+        if (distance < min_distance) {
+            min_distance = distance;
+            closest_rail = rail;
+        }
+    }
+    
+    return closest_rail;
 }
