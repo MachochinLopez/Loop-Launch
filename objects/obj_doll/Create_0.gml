@@ -1,16 +1,23 @@
-#region States
-
 enum DollStates {
+    Freeze,
     InAir,
-    OnRail
+    Grinding
 }
 
-state = DollStates.InAir;
+state = DollStates.Freeze;
 
-#endregion
+// Físicas
+hspeed = 0;
+vspeed = 0;
+doll_gravity = 0.2;
+friction = 0.0001;
+air_resistance = 0.995;
 
-#region Physics
+// Rieles
+rails = [];
+current_rail = noone;
 
-doll_gravity = 0.05 * delta_time;
-
-#endregion
+// Tresholds
+rail_detection_distance = 10;
+rail_connection_tolerance = 2;
+jump_distance_threshold = 3;
